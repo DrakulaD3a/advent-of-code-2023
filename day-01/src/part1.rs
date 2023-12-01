@@ -1,29 +1,19 @@
+#[must_use]
 pub fn process(input: &str) -> u32 {
-    let lines = input.split('\n');
-    let mut output = 0;
+    input
+        .lines()
+        .map(|line| {
+            let buf: Vec<_> = line.chars().filter(|c| c.is_numeric()).collect();
 
-    for line in lines {
-        let line_copy = line.clone();
-        let mut buf = String::new();
-
-        for c in line.chars() {
-            if c.is_numeric() {
-                buf.push(c);
-                break;
-            }
-        }
-
-        for c in line_copy.chars().rev() {
-            if c.is_numeric() {
-                buf.push(c);
-                break;
-            }
-        }
-
-        output += buf.parse::<u32>().unwrap_or(0);
-    }
-
-    output
+            format!(
+                "{}{}",
+                buf.first().unwrap_or(&'0'),
+                buf.last().unwrap_or(&'0')
+            )
+            .parse::<u32>()
+            .unwrap_or(0)
+        })
+        .sum()
 }
 
 #[cfg(test)]
