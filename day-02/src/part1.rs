@@ -1,7 +1,9 @@
+const MAX_RED: u32 = 12;
+const MAX_BLUE: u32 = 14;
+const MAX_GREEN: u32 = 13;
+
 #[must_use]
 pub fn process(input: &str) -> u32 {
-    let (max_reds, max_greens, max_blues) = (12, 13, 14);
-
     input
         .lines()
         .map(|line| {
@@ -18,9 +20,9 @@ pub fn process(input: &str) -> u32 {
 
                             let num = color.next().unwrap().parse::<u32>().unwrap();
                             match color.next().unwrap() {
-                                "blue" => num <= max_blues,
-                                "green" => num <= max_greens,
-                                "red" => num <= max_reds,
+                                "red" => num <= MAX_RED,
+                                "green" => num <= MAX_GREEN,
+                                "blue" => num <= MAX_BLUE,
                                 _ => unreachable!(),
                             }
                         })
