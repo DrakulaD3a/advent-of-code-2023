@@ -5,9 +5,7 @@ pub fn process(input: &str) -> u32 {
     input
         .lines()
         .map(|line| {
-            let Some((game_num, line)) = line.split_once(':') else {
-                return 0;
-            };
+            let (game_num, line) = line.split_once(':').unwrap();
 
             let line: bool = line
                 .trim()
