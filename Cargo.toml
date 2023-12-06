@@ -3,3 +3,4 @@ resolver = "2"
 members = ["day-*"]
 
 [workspace.dependencies]
+rayon = "1.8"

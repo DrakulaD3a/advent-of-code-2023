@@ -1,3 +1,4 @@
+use rayon::iter::{IntoParallelRefMutIterator, ParallelIterator};
 use std::ops::Range;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -33,7 +34,7 @@ pub fn process(input: &str) -> u64 {
     let input = input
         .split("\n\n")
         .filter_map(|category| {
-            let Some((name, value)) = category.split_once(":") else {
+            let Some((name, value)) = category.split_once(':') else {
                 panic!("Split as ':' failed");
             };
 
@@ -98,32 +99,24 @@ pub fn process(input: &str) -> u64 {
         })
         .collect::<Vec<Map>>();
 
-    println!("Input computed!");
-    println!(
-        "{} * {}",
-        &seeds.len(),
-        &input
-            .iter()
-            .flat_map(|map| map.sources_and_destinations.iter())
-            .collect::<Vec<_>>()
-            .len()
-    );
-
-    input.iter().enumerate().for_each(|(i, map)| {
-        println!("Starting map {i}");
-        'outer: for seed in seeds.iter_mut() {
-            for source_and_dest in map.sources_and_destinations.iter() {
-                if source_and_dest.source_range.contains(seed) {
-                    *seed = (*seed - source_and_dest.source) + source_and_dest.destination;
-                    continue 'outer;
-                }
-            }
-        }
-    });
+    for map in &input {
+        seeds
+            .par_iter_mut()
+            .for_each(|seed| *seed = compute(*seed, map).unwrap_or(*seed))
+    }
 
     println!("Computation finished");
 
     *seeds.iter().min().unwrap()
+}
+
+fn compute(seed: u64, map: &Map) -> Option<u64> {
+    for source_and_dest in &map.sources_and_destinations {
+        if source_and_dest.source_range.contains(&seed) {
+            return Some((seed - source_and_dest.source) + source_and_dest.destination);
+        }
+    }
+    None
 }
 
 #[cfg(test)]
